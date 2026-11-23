@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: >
+      Cleaned and standardized orders data from the Bronze layer.
+      Each row represents one order.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each order.
+        data_tests:
+         - not_null
+         - unique
+
+      - name: order_date
+        description: Date when the order was placed
+        data_tests:
+          - not_null            
+
+      - name: customer_id
+        description: Identifier of the customer who placed the order.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: zip
+        description: Postal code associated with the order.
+
+      - name: order_status
+        description: Standardized order status in lowercase.
+        data_tests:
+          - not_null
+
+      - name: payment_method
+        description: Standardized payment method in lowercase.
+
+      - name: device_type
+        description: Device used to place the order.
+
+      - name: order_source
+        description: Channel through which the order was placed.

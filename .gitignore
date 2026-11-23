@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.*
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Dagster
+.dagster/
+
+# IDE
+.vscode/
+.idea/
+
+# Datasets
+data/
+Datasets/

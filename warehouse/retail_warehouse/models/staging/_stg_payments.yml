@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: stg_payments
+    description: >
+      Cleaned and standardized payment records from the Bronze layer.
+      Each row represents the payment information associated with an order.
+
+    columns:
+      - name: order_id
+        description: >
+          Unique identifier of the order associated with the payment.
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: payment_method
+        description: Standardized payment method used for the order.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'cod', 'paypal', 'apple_pay', 'bank_transfer']
+
+      - name: payment_value
+        description: Total payment amount associated with the order.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: installments
+        description: Number of installments associated with the payment.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

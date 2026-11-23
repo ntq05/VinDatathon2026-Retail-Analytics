@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: bronze
+    tables:
+      - name: geography
+      - name: orders
+      - name: order_items
+      - name: customers
+      - name: products
+      - name: payments
+      - name: promotions
+      - name: inventory
+      - name: returns
+      - name: reviews
+      - name: shipments
+      - name: sales
+      - name: web_traffic

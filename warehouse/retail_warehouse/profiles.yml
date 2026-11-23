@@ -1,0 +1,14 @@
+retail_warehouse:
+  outputs:
+    dev:
+      type: duckdb
+      path: ../../data/warehouse/retail.duckdb
+      schema: main
+      threads: 1
+
+    # prod:
+    #   type: duckdb
+    #   path: prod.duckdb
+    #   threads: 4
+
+  target: dev

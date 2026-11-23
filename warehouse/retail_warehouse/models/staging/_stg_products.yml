@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: stg_products
+    description: >
+      Cleaned and standardized product master data from the Bronze layer.
+      Each row represents a product identified by its unique product ID,
+      including product attributes, pricing, and cost information.
+
+    columns:
+      - name: product_id
+        description: Unique identifier for each product.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        description: Display name of the product.
+        data_tests:
+          - not_null
+
+      - name: category
+        description: Standardized product category in lowercase.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - streetwear
+                  - casual
+                  - outdoor
+                  - genz
+
+      - name: segment
+        description: Standardized product segment in lowercase.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - everyday
+                  - performance
+                  - balanced
+                  - standard
+                  - all-weather
+                  - premium
+                  - trendy
+                  - activewear
+
+      - name: size
+        description: Size attribute of the product, if applicable.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['S', 'M', 'L', 'XL']
+
+      - name: color
+        description: Color attribute of the product, if applicable.
+
+      - name: price
+        description: Listed selling price of the product.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: cogs
+        description: Cost of goods sold per product unit.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

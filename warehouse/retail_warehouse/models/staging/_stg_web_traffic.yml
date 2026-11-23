@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: stg_web_traffic
+    description: >
+      Cleaned and standardized website traffic metrics from the Bronze layer.
+      Each row represents daily website traffic metrics for a specific
+      traffic source, including sessions, visitors, page views,
+      bounce rate, and average session duration.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - traffic_date
+              - traffic_source
+
+    columns:
+      - name: traffic_date
+        description: Date when website traffic metrics were recorded.
+        data_tests:
+          - not_null
+
+      - name: sessions
+        description: Total number of website sessions.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: unique_visitors
+        description: >
+          Number of distinct visitors recorded for the traffic source
+          on the specified date.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: page_views
+        description: Total number of page views.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: bounce_rate
+        description: >
+          Proportion of website sessions that resulted in a bounce,
+          assuming values are represented on a scale from 0 to 1.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0 AND bounce_rate <= 1"
+
+      - name: avg_session_duration_sec
+        description: >
+          Average duration of website sessions in seconds.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: traffic_source
+        description: >
+          Standardized source through which visitors accessed the website.
+        data_tests:
+          - not_null

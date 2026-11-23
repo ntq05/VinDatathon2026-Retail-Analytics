@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: stg_geography
+    description: >
+      Cleaned and standardized geographic reference data from the Bronze layer.
+      Each row represents a geographic location identified by its postal code.
+
+    columns:
+      - name: zip
+        description: >
+          Postal code used to identify a geographic location.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: city
+        description: >
+          City associated with the postal code.
+        data_tests:
+          - not_null
+
+      - name: region
+        description: >
+          Geographic region associated with the postal code.
+        data_tests:
+          - not_null
+
+      - name: district
+        description: >
+          District associated with the postal code.
+        data_tests:
+          - not_null

@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: stg_returns
+    description: >
+      Cleaned and standardized product return records from the Bronze layer.
+      Each row represents a unique return record associated with an order
+      and a product, including the return date, reason, quantity,
+      and refund amount.
+
+    columns:
+      - name: return_id
+        description: Unique identifier of the return record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        description: >
+          Identifier of the order associated with the return.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        description: >
+          Identifier of the product being returned.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: return_date
+        description: Date when the product return was recorded.
+        data_tests:
+          - not_null
+
+      - name: return_reason
+        description: >
+          Standardized reason provided for returning the product.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['late_delivery', 'wrong_size', 'defective', 'changed_mind', 'not_as_described']
+      - name: return_quantity
+        description: Number of product units returned.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: refund_amount
+        description: Monetary amount refunded for the return.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

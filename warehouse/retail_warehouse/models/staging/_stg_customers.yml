@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: >
+      Cleaned and standardized customer data from the Bronze layer.
+      Each row represents one customer.
+
+    columns:
+      - name: customer_id
+        description: Unique identifier for each customer.
+        data_tests:
+         - not_null
+         - unique
+
+      - name: signup_date
+        description: Date when the customers sign up 
+        data_tests:
+          - not_null        
+
+      - name: zip
+        description: Postal code associated with the order.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_geography')
+                field: zip
+
+      - name: city
+        description: City where the customers live
+
+      - name: gender
+        description: Customers' gender
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['male', 'female', 'non-binary']
+
+      - name: age_group
+        description: age group where each customer belongs to
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['35-44', '45-54', '18-24', '55+', '25-34']
+
+      - name: acquisition_channel
+        description: Channel through which the customer was acquired.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['social_media', 'email_campaign', 'organic_search', 'referral', 'direct', 'paid_search']

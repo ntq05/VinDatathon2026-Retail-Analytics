@@ -1,0 +1,100 @@
+
+version: 2
+
+models:
+  - name: stg_promotions
+    description: >
+      Cleaned and standardized promotion master data from the Bronze layer.
+      Each row represents a unique promotion, including its discount
+      configuration, validity period, applicable product category,
+      promotion channel, and stacking eligibility.
+
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "end_date >= start_date"
+
+    columns:
+      - name: promo_id
+        description: Unique identifier of the promotion.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: promo_name
+        description: Display name of the promotion.
+        data_tests:
+          - not_null
+
+      - name: promo_type
+        description: >
+          Standardized type of promotion used to determine
+          how the discount is applied.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['percentage', 'fixed']
+
+      - name: discount_value
+        description: >
+          Discount value associated with the promotion.
+          Its interpretation depends on the promotion type.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: start_date
+        description: Date when the promotion becomes valid.
+        data_tests:
+          - not_null
+
+      - name: end_date
+        description: Date when the promotion expires.
+        data_tests:
+          - not_null
+
+      - name: applicable_category
+        description: >
+          Product category restriction for the promotion.
+          NULL indicates that the promotion applies to all
+          product categories. Otherwise, the promotion applies
+          only to the specified category.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['streetwear', 'outdoor']
+        
+
+      - name: promo_channel
+        description: >
+          Standardized sales or marketing channel
+          associated with the promotion.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['email', 'online', 'all_channels', 'in_store', 'social_media']
+        
+
+      - name: stackable_flag
+        description: >
+          Binary flag indicating whether the promotion
+          can be combined with other promotions.
+          1 indicates stackable and 0 indicates non-stackable.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: min_order_value
+        description: >
+          Minimum order value required to qualify
+          for the promotion.
+        data_tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

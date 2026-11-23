@@ -1,0 +1,80 @@
+
+version: 2
+
+models:
+  - name: stg_order_items
+    description: >
+      Cleaned and standardized order line-item data from the Bronze layer.
+      Each row represents a product line item within a customer order,
+      including quantity, unit price, discounts, and applied promotions.
+
+    columns:
+      - name: order_id
+        description: >
+          Identifier of the order to which the line item belongs.
+          References the orders staging model.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        description: >
+          Identifier of the product purchased in the order line item.
+          References the products staging model.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: quantity
+        description: >
+          Number of units purchased for the product in the order line item.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: unit_price
+        description: >
+          Price per unit of the product at the time of purchase,
+          before applying line-item discounts.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: discount_amount
+        description: >
+          Discount amount applied to the order line item.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: promo_id
+        description: >
+          Identifier of the primary promotion applied to the order
+          line item, if applicable.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_promotions')
+                field: promo_id
+
+      - name: promo_id_2
+        description: >
+          Identifier of the secondary promotion applied to the order
+          line item, if applicable.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_promotions')
+                field: promo_id

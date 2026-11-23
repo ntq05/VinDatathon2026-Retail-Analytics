@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_shipments
+    description: >
+      Cleaned and standardized shipment records from the Bronze layer.
+      Each row represents shipping information associated with an order,
+      including shipment date, delivery date, and shipping fee.
+      The expected grain is one shipment record per order.
+
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: >
+              delivery_date IS NULL
+              OR delivery_date >= ship_date
+
+    columns:
+      - name: order_id
+        description: >
+          Unique identifier of the order associated with the shipment.
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: ship_date
+        description: >
+          Date when the order was shipped.
+        data_tests:
+          - not_null
+
+      - name: delivery_date
+        description: >
+          Date when the order was delivered.
+          NULL indicates that delivery has not been recorded.
+
+      - name: shipping_fee
+        description: >
+          Shipping fee associated with the order.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

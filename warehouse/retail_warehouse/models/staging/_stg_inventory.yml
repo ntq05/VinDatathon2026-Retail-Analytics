@@ -1,0 +1,135 @@
+version: 2
+
+models:
+  - name: stg_inventory
+    description: >
+      Cleaned and standardized inventory snapshots from the Bronze layer.
+      Each row represents the inventory status of a product on a
+      specific snapshot date, assuming one snapshot per product per day.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - snapshot_date
+              - product_id
+
+    columns:
+      - name: snapshot_date
+        description: Date when the inventory snapshot was recorded.
+        data_tests:
+          - not_null
+
+      - name: product_id
+        description: Identifier of the product associated with the inventory snapshot.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: stock_on_hand
+        description: Number of product units available in inventory.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: units_received
+        description: Number of product units received during the reporting period.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: units_sold
+        description: Number of product units sold during the reporting period.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: stockout_days
+        description: Number of days the product was out of stock during the reporting period.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: days_of_supply
+        description: Estimated number of days the available inventory can support demand.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: fill_rate
+        description: Proportion of demand fulfilled from available inventory.
+        data_tests:
+          - not_null
+
+      - name: stockout_flag
+        description: Binary indicator showing whether a stockout condition occurred.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: overstock_flag
+        description: Binary indicator showing whether the product is overstocked.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: reorder_flag
+        description: Binary indicator showing whether the product requires replenishment.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+      - name: sell_through_rate
+        description: Proportion of available inventory sold during the reporting period.
+        data_tests:
+          - not_null
+
+      - name: product_name
+        description: Name of the product.
+        data_tests:
+          - not_null
+
+      - name: category
+        description: Product category.
+        data_tests:
+          - not_null
+
+      - name: segment
+        description: Product market segment.
+        data_tests:
+          - not_null
+
+      - name: year
+        description: Calendar year associated with the inventory snapshot.
+        data_tests:
+          - not_null
+
+      - name: month
+        description: Calendar month associated with the inventory snapshot.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "BETWEEN 1 AND 12"

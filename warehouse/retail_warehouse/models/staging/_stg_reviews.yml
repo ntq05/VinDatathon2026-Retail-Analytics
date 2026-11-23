@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_reviews
+    description: >
+      Cleaned and standardized customer product review records
+      from the Bronze layer. Each row represents a unique review
+      associated with an order, product, and customer, including
+      the review date, rating, and review title.
+
+    columns:
+      - name: review_id
+        description: Unique identifier of the review record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        description: >
+          Identifier of the order associated with the review.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        description: >
+          Identifier of the product being reviewed.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: customer_id
+        description: >
+          Identifier of the customer who submitted the review.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: review_date
+        description: Date when the customer submitted the review.
+        data_tests:
+          - not_null
+
+      - name: rating
+        description: >
+          Numerical rating assigned to the product by the customer,
+          assumed to range from 1 to 5.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+
+      - name: review_title
+        description: >
+          Title or short text provided by the customer
+          when reviewing the product.

@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: stg_sales
+    description: >
+      Cleaned and standardized daily sales summary data from the Bronze layer.
+      Each row represents the total revenue and cost of goods sold
+      for a specific sales date.
+
+    columns:
+      - name: sales_date
+        description: >
+          Date associated with the daily sales summary.
+          Expected to uniquely identify each daily record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: revenue
+        description: >
+          Total revenue recorded for the sales date.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: cogs
+        description: >
+          Total cost of goods sold recorded for the sales date.
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
