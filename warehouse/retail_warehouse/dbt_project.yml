@@ -34,3 +34,7 @@ models:
     staging:
       +schema: silver
       +materialized: table
+
+    marts:
+      +schema: gold
+      +materialized: table
