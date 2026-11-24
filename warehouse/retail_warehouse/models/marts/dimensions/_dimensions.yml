@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: dim_products
+    description: Product dimension table.
+
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        data_tests:
+          - not_null
+
+  - name: dim_date
+    description: Continuous calendar dimension.
+
+    columns:
+      - name: date_key
+        data_tests:
+          - not_null
+          - unique
+
+      - name: year
+        data_tests:
+          - not_null
+
+      - name: month
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                quote: false
+
+      - name: quarter
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+
+      - name: day_of_week
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1, 2, 3, 4, 5, 6]
+                quote: false
+
+  - name: dim_customers
+    description: Customer dimension at customer grain.
+
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: zip
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_geography')
+                field: zip
+
+      - name: signup_date
+        data_tests:
+          - not_null
+
+  - name: dim_geography
+    description: Geography dimension at ZIP code grain.
+
+    columns:
+      - name: zip
+        data_tests:
+          - not_null
+          - unique
+
+      - name: city
+        data_tests:
+          - not_null
+
+      - name: region
+        data_tests:
+          - not_null
+      
