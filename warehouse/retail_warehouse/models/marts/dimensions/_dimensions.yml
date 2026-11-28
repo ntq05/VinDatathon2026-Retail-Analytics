@@ -84,4 +84,31 @@ models:
       - name: region
         data_tests:
           - not_null
-      
+
+  - name: dim_promotions
+    description: Promotion dimension at promo_id grain.
+
+    columns:
+      - name: promo_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: promo_name
+        data_tests:
+          - not_null
+
+      - name: promo_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['percentage', 'fixed']
+
+      - name: start_date
+        data_tests:
+          - not_null
+
+      - name: end_date
+        data_tests:
+          - not_null
